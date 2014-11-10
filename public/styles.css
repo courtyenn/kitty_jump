@@ -7,7 +7,7 @@
 }
 
 #game{
-	background:url('images/kitty_bg.jpg');
+	background:url('../images/kitty_bg.jpg');
 	display:block;
 	position:absolute;
 	z-index:1;
