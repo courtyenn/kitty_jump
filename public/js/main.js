@@ -89,8 +89,22 @@ var kitty_jump = (function(){
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
 				$('#start').removeClass('invisible');
-				//bgSound.play();
+				bgSound.play();
+			}
 
+			if(keydown.m){
+				keydown.m = false;
+				currentGameState = 150;
+			}
+		},
+		"150" : function(){
+			if(previousGameState != currentGameState){
+				previousGameState = currentGameState;
+				bgSound.pause();
+			}
+			if(keydown.m){
+			keydown.m = false;
+			currentGameState = 100;
 			}
 		},
 		"200" : function(){
@@ -424,11 +438,11 @@ function setup(){
     	$('#start').addClass('visibile');
     	
     	bgSound.volume = .80;
-    	bgSound.addEventListener('ended', function() {
+   /* 	bgSound.addEventListener('ended', function() {
     		this.currentTime = 0;
     		this.play();
-    	}, false);
-    	bgSound.play();
+    	}, false); */
+    //	bgSound.play();
     	soundFx.volume = .38;
     	gameDead.volume = .50;
 
