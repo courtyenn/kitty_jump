@@ -3,7 +3,7 @@ $(window).ready(function(){
 });
 
 var kitty_jump = (function(){
-	var ROOT = '/wp-content/themes/3sol/js/kitty_jump/public/';
+	var ROOT = '/wp-content/themes/noclue/js/kitty_jump/public/';
 	var CANVAS_WIDTH = 650;
 	var CANVAS_HEIGHT = 500;
 	var FPS = 60;
@@ -77,7 +77,7 @@ var kitty_jump = (function(){
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
 				$('#pause').addClass('visible');
-				gameSound.pause();
+				gameSound.muted = true;
 			}
 
 			if(keydown.o){
@@ -89,7 +89,9 @@ var kitty_jump = (function(){
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
 				$('#start').removeClass('invisible');
-				bgSound.play();
+				if(!bgSound.muted){
+					bgSound.play();
+				}
 			}
 
 			if(keydown.m){
@@ -100,7 +102,7 @@ var kitty_jump = (function(){
 		"150" : function(){
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
-				bgSound.pause();
+				bgSound.muted = true;
 			}
 			if(keydown.m){
 			keydown.m = false;
@@ -112,11 +114,11 @@ var kitty_jump = (function(){
 
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
-				gameSound.play();
+				if(!gameSound.muted){
+					gameSound.play();
+				}
 			//	soundFx.play();
 			}
-				gameSound.muted = false;
-				soundFx.muted = false;
 			/** PAUSED **/
 			if(keydown.p) {
 				currentGameState = 0;
@@ -137,8 +139,8 @@ var kitty_jump = (function(){
 			/** MOVE DOWN **/
 			if(keydown.s) {
 				player.y += 5;
-			}	
-			
+			}
+
 			playerBullets.forEach(function(bullet) {
 				bullet.update();
 			});
@@ -177,8 +179,13 @@ var kitty_jump = (function(){
 		"300" : function(){
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
-				gameSound.pause();
-				gameDead.play();
+				if(!gameSound.muted){
+					gameSound.pause();
+					if(!gameDead.muted){
+					gameDead.play();
+					}
+				}
+
 				$('#game-over').addClass('visible');
 			}
 		},
@@ -186,7 +193,7 @@ var kitty_jump = (function(){
 			if(previousGameState != currentGameState){
 			previousGameState = currentGameState;
    		gameSound.pause();
-			
+
 			}
 			gameSound.muted = true;
 			soundFx.muted = true;
@@ -210,8 +217,8 @@ var kitty_jump = (function(){
 			/** MOVE DOWN **/
 			if(keydown.s) {
 				player.y += 5;
-			}	
-			
+			}
+
 			playerBullets.forEach(function(bullet) {
 				bullet.update();
 			});
@@ -244,6 +251,39 @@ var kitty_jump = (function(){
 			if(Math.random() < 0.1) {
 				Okibble = !Okibble;
 				kibbles.push(Kibble({kibble:Okibble}));
+			}
+		},
+		"450": function(){
+			if(previousGameState != currentGameState){
+				gameSound.muted = !gameSound.muted;
+				soundFx.muted = !soundFx.muted;
+				bgSound.muted = !bgSound.muted;
+				gameDead.muted = !gameDead.muted;
+				if(gameSound.muted){
+					gameSound.pause();
+				}
+				else {
+					gameSound.play();
+				}
+				if(soundFx.muted){
+					soundFx.pause();
+				}
+				else{
+					soundFx.play();
+				}
+				if(bgSound.muted){
+					bgSound.pause();
+				}
+				else{
+					bgSound.pause();
+				}
+				if(gameDead.muted){
+					gameDead.pause();
+				}
+				else {
+					gameDead.pause();
+				}
+				currentGameState = previousGameState;
 			}
 		}
 	};
@@ -328,7 +368,7 @@ var kitty_jump = (function(){
     		this.active = false;
             // Extra Credit: Add an explosion graphic
         };
-        
+
         return I;
     };
 
@@ -372,7 +412,7 @@ var kitty_jump = (function(){
     	I.explode = function() {
     		this.active = false;
     	};
-    	
+
     	return I;
     };
 
@@ -419,7 +459,7 @@ var kitty_jump = (function(){
     			player.explode();
     		}
     	});
-    	
+
     }
 
 function setup(){
@@ -436,7 +476,7 @@ function setup(){
     	div.setAttribute("style", "width:" + CANVAS_WIDTH + "px;height:" + CANVAS_HEIGHT + "px");
     	startScreen.setAttribute("style", "width:" + CANVAS_WIDTH + "px;height:" + CANVAS_HEIGHT + "px");
     	$('#start').addClass('visibile');
-    	
+
     	bgSound.volume = .80;
    /* 	bgSound.addEventListener('ended', function() {
     		this.currentTime = 0;
@@ -448,7 +488,7 @@ function setup(){
 
 }
 function update(){
-	gamestates[currentGameState + ""]();	
+	gamestates[currentGameState + ""]();
 }
 function draw(){
 context.clearRect(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -456,7 +496,7 @@ context.clearRect(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
 player.draw();
 playerBullets.forEach(function(bullet) {
 	bullet.draw();
-});	
+});
 enemies.forEach(function(enemy) {
 	enemy.draw();
 });
@@ -492,7 +532,7 @@ function loop(){
 		event.preventDefault();
 		currentGameState = 200;
 		$('#start').addClass('invisible');
-		bgSound.pause();
+		bgSound.muted = true;
 		init();
 	});
 	$('#main-menu').on('click', function(){
@@ -500,6 +540,11 @@ function loop(){
 		currentGameState = 100;
 		$('#start').removeClass('invisible');
 		$('#game-over').removeClass('visible');
+	});
+	$('#mute').on('click', function(){
+		console.log('mute clicked!');
+		event.preventDefault();
+		currentGameState = 450;
 	});
 
 	return {
@@ -510,7 +555,4 @@ function loop(){
 			}, 1000/FPS);
 		}
 	}
-
-
 })();
-
