@@ -3,7 +3,7 @@ $(window).ready(function(){
 });
 
 var kitty_jump = (function(){
-	var ROOT = '/wp-content/themes/noclue/js/kitty_jump/public/';
+	var ROOT = '/wp-content/themes/clean-slate/js/kitty_jump/public/'; // need to get rid of hard code
 	var CANVAS_WIDTH = 650;
 	var CANVAS_HEIGHT = 500;
 	var FPS = 60;
@@ -40,8 +40,6 @@ var kitty_jump = (function(){
 			context.drawImage(player.image, this.x, this.y);
 		},
 		shoot : function() {
-
-			//console.log('shooting');
 			var bulletPosition = this.midpoint();
 			playerBullets.push(Bullet({
 				speed: 5,
@@ -58,18 +56,15 @@ var kitty_jump = (function(){
 		explode : function(){
 			player.lives.count--;
 			if(player.lives.count == 0)currentGameState = 300;
-			//console.log('I\'VE BEEN HIT');
 		}
 	};
 
 	(function(){
-		//console.log('PRELOAD');
-		player.image.src = ROOT+"images/kitty_eat.png";
+		player.image.src = ROOT+"images/kitty_cat.png";
 		enemy.src = ROOT+"images/candy_sm.png";
 		player.lives.image.src = ROOT+"images/life.png";
 		kibble_O.src = ROOT+"images/kibble_O.png";
 		kibble_X.src = ROOT+"images/kibble_X.png";
-		//console.log('done');
 	})();
 
 	gamestates = {
@@ -109,15 +104,23 @@ var kitty_jump = (function(){
 			currentGameState = 100;
 			}
 		},
+		"175" : function(){
+			if(previousGameState != currentGameState){
+				previousGameState = currentGameState;
+				$('#start').addClass('invisible');
+				$('#instructions').removeClass('invisible');
+			}
+			if(keydown.m){
+			keydown.m = false;
+			currentGameState = 175;
+			}
+		},
 		"200" : function(){
-
-
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
 				if(!gameSound.muted){
 					gameSound.play();
 				}
-			//	soundFx.play();
 			}
 			/** PAUSED **/
 			if(keydown.p) {
@@ -186,7 +189,7 @@ var kitty_jump = (function(){
 					}
 				}
 
-				$('#game-over').addClass('visible');
+				$('#game-over').removeClass('invisible');
 			}
 		},
 		"400" : function(){
@@ -528,23 +531,34 @@ function loop(){
 	}
 
 	$('.start-game').on('click', function(event){
-		if(currentGameState == 300)$('#game-over').removeClass('visible');
+		if(currentGameState == 300)$('#game-over').addClass('invisible');
 		event.preventDefault();
 		currentGameState = 200;
 		$('#start').addClass('invisible');
+		$('#instructions').addClass('invisible');
+		$('#game').removeClass('invisible');
 		bgSound.muted = true;
 		init();
 	});
-	$('#main-menu').on('click', function(){
+	$('.main-menu').on('click', function(event){
 		event.preventDefault();
 		currentGameState = 100;
 		$('#start').removeClass('invisible');
-		$('#game-over').removeClass('visible');
+		$('#game-over').addClass('invisible');
 	});
-	$('#mute').on('click', function(){
-		console.log('mute clicked!');
+	$('#mute').on('click', function(event){
 		event.preventDefault();
 		currentGameState = 450;
+	});
+	$('.go-to-main-menu').on('click', function(event){
+		event.preventDefault();
+		currentGameState = 100;
+	});
+	$('.go-to-instructions').on('click', function(event){
+		event.preventDefault();
+		currentGameState = 175;
+		$('#start').addClass('invisible');
+		$('#instructions').removeClass('invisible');
 	});
 
 	return {
