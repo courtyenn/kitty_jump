@@ -14,6 +14,8 @@ var kitty_jump = (function(){
 	var myTimer;
 	var context;
 	var score = 0;
+	var toRadian = Math.PI / 180;
+	var toDegree = 180 / Math.PI;
 	var kibble = [];
 	var kibbles = [];
 	var kibble_O = new Image();
@@ -26,20 +28,32 @@ var kitty_jump = (function(){
 	var enemy = new Image();
 	var enemies = [];
 	var playerBullets = [];
+	var gravity = 1;
 	var player = {
-		x:30,
-		y:CANVAS_HEIGHT-100,
+		x: 30,
+		y: CANVAS_HEIGHT-100,
+		yStep: 1,
 		width: 57,
 		height: 53,
 		lives: {
-			count: 9,
-			image : new Image()
+			count: 100,
+			image: new Image()
 		},
-		image : new Image(),
-		draw : function(){
+		initialVelocityY: 5,
+		velocityY: 0,
+		velocityX: 0,
+		time: 0,
+		peakY: 0,
+		image: new Image(),
+		isJumping: false,
+		isFalling: false,
+		draw: function(){
+			if(this.isJumping){
+				this.jump(400);
+			}
 			context.drawImage(player.image, this.x, this.y);
 		},
-		shoot : function() {
+		shoot: function() {
 			var bulletPosition = this.midpoint();
 			playerBullets.push(Bullet({
 				speed: 5,
@@ -47,15 +61,24 @@ var kitty_jump = (function(){
 				y: bulletPosition.y
 			}));
 		},
-		midpoint : function() {
+		midpoint: function() {
 			return {
 				x: this.x + this.width/2,
 				y: this.y + this.height/2
 			};
 		},
-		explode : function(){
+		explode: function(){
 			player.lives.count--;
 			if(player.lives.count == 0)currentGameState = 300;
+		},
+		jump: function(power){
+			var increase = Math.PI / power;
+			this.y -=  Math.sin(this.time);
+			this.time += increase;
+			if(this.time >= 20){
+				this.time = 0;
+				this.isJumping = false;
+			}
 		}
 	};
 
@@ -71,13 +94,13 @@ var kitty_jump = (function(){
 		"0" : function(){
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
-				$('#pause').addClass('visible');
+				$('#pause').removeClass('invisible');
 				gameSound.muted = true;
 			}
 
 			if(keydown.o){
-				currentGameState = 200;
-				$('#pause').removeClass('visible');
+				currentGameState = 200;s
+				$('#pause').addClass('invisible');
 			}
 		},
 		"100" : function(){
@@ -122,27 +145,22 @@ var kitty_jump = (function(){
 					gameSound.play();
 				}
 			}
-			/** PAUSED **/
 			if(keydown.p) {
 				currentGameState = 0;
 			}
-			/** MUTE **/
 			if(keydown.m){
 				keydown.m = false;
 				currentGameState = 400;
 			}
-			/** ATTACK **/
 			if(keydown.space) {
 				if(frames%10===0)player.shoot();
 			}
-			/** MOVE UP**/
 			if(keydown.w) {
-				player.y -= 5;
+				player.isJumping = true;
 			}
-			/** MOVE DOWN **/
-			if(keydown.s) {
-				player.y += 5;
-			}
+			// if(keydown.s) {
+			// 	player.y += 5;
+			// }
 
 			playerBullets.forEach(function(bullet) {
 				bullet.update();
@@ -170,10 +188,10 @@ var kitty_jump = (function(){
 
 			handleCollisions();
 
-			if(Math.random() < 0.1) {
+			if(Math.random() < 0.05) {
 				enemies.push(Enemy());
 			}
-			if(Math.random() < 0.1) {
+			if(Math.random() < 0.05) {
 				Okibble = !Okibble;
 				kibbles.push(Kibble({kibble:Okibble}));
 			}
@@ -340,7 +358,7 @@ var kitty_jump = (function(){
     	I.yVelocity = 0;
 
     	I.width = 25;
-    	I.height = 27;
+    	I.height = 25;
 
     	I.inBounds = function() {
     		return I.x >= 0 && I.x <= CANVAS_WIDTH &&
@@ -379,14 +397,14 @@ var kitty_jump = (function(){
     	I = I || {};
 
     	I.active = true;
-    	I.age = Math.floor(Math.random() * 128);
+    	I.age = Math.floor(Math.random() * 20);
 
     	I.color = "#A2B";
 
     	I.x = CANVAS_WIDTH;
     	I.y = (CANVAS_HEIGHT-50) - Math.random() * CANVAS_HEIGHT;
-    	I.xVelocity = 4 + (Math.random() - .5);
-    	I.yVelocity = 0;
+    	I.xVelocity = 3 + (Math.random() - .5);
+    // 	I.yVelocity = 0;
 
     	I.width = 32;
     	I.height = 32;
@@ -405,7 +423,7 @@ var kitty_jump = (function(){
 
     	I.update = function() {
     		I.x -= I.xVelocity;
-    		I.y += I.yVelocity;
+    	// 	I.y += I.yVelocity;
 
     		I.age++;
 
@@ -432,7 +450,7 @@ var kitty_jump = (function(){
     			soundFx.play();
     			score++;
     			kibble.active = false;
-    			if(score%10===0 && player.lives.count < 9)player.lives.count++;
+    			if(score%10===0 && player.lives.count > 0)player.lives.count++;
     		}
     	});
     	playerBullets.forEach(function(bullet) {
@@ -444,7 +462,7 @@ var kitty_jump = (function(){
     		});
 
     		kibbles.forEach(function(kibble){
-    			if(collides(bullet,kibble)) {
+    			if(collides(bullet, kibble)) {
     				kibble.active = false;
 						bullet.active = false;
     				score--;
@@ -523,7 +541,7 @@ function loop(){
 	}
 
 	function init(){
-		player.lives.count = 9;
+		player.lives.count > 0 ? player.lives.count : 9;
 		score = 0;
 		enemies = [];
 		kibbles = [];
