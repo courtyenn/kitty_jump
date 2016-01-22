@@ -39,8 +39,8 @@ var kitty_jump = (function(){
 			count: 100,
 			image: new Image()
 		},
-		initialVelocityY: 5,
-		velocityY: 0,
+		initialVelocityY: 30,
+		velocityY: 30,
 		velocityX: 0,
 		time: 0,
 		peakY: 0,
@@ -49,11 +49,12 @@ var kitty_jump = (function(){
 		isFalling: false,
 		draw: function(){
 			if(this.isJumping){
-				this.jump(400);
+				this.jump();
 			}
 			context.drawImage(player.image, this.x, this.y);
 		},
 		shoot: function() {
+
 			var bulletPosition = this.midpoint();
 			playerBullets.push(Bullet({
 				speed: 5,
@@ -71,13 +72,25 @@ var kitty_jump = (function(){
 			player.lives.count--;
 			if(player.lives.count == 0)currentGameState = 300;
 		},
-		jump: function(power){
-			var increase = Math.PI / power;
-			this.y -=  Math.sin(this.time);
-			this.time += increase;
-			if(this.time >= 20){
-				this.time = 0;
-				this.isJumping = false;
+		jump: function(){
+			if(this.velocityY <= 0 && !this.isFalling){
+				this.isFalling = true;
+			}
+
+			if(this.isFalling){
+				this.velocityY += gravity;
+				if(this.velocityY >= this.initialVelocityY){
+					this.isJumping = false;
+					this.isFalling = false;
+				}
+				else {
+					this.y += this.velocityY;
+				}
+			}
+
+			if(this.isJumping && !this.isFalling){
+				this.velocityY -= gravity;
+				this.y -=  this.velocityY;
 			}
 		}
 	};
@@ -157,10 +170,14 @@ var kitty_jump = (function(){
 			}
 			if(keydown.w) {
 				player.isJumping = true;
+				keydown.w = false;
 			}
-			// if(keydown.s) {
-			// 	player.y += 5;
-			// }
+			if(keydown.d) {
+				player.x += 5;
+			}
+			if(keydown.a) {
+				player.x -= 5;
+			}
 
 			playerBullets.forEach(function(bullet) {
 				bullet.update();
