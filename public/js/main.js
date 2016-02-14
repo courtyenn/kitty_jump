@@ -29,6 +29,7 @@ var kitty_jump = (function(){
 	var enemies = [];
 	var playerBullets = [];
 	var gravity = 1;
+	var powerBar = new Powerbar({x: 300, y: CANVAS_HEIGHT-30});
 	var player = {
 		x: 30,
 		y: CANVAS_HEIGHT-100,
@@ -36,7 +37,7 @@ var kitty_jump = (function(){
 		width: 57,
 		height: 53,
 		lives: {
-			count: 100,
+			count: 9,
 			image: new Image()
 		},
 		initialVelocityY: 30,
@@ -120,9 +121,9 @@ var kitty_jump = (function(){
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
 				$('#start').removeClass('invisible');
-				if(!bgSound.muted){
-					bgSound.play();
-				}
+				// if(!bgSound.muted){
+				// 	bgSound.play();
+				// }
 			}
 
 			if(keydown.m){
@@ -155,7 +156,7 @@ var kitty_jump = (function(){
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
 				if(!gameSound.muted){
-					gameSound.play();
+					// gameSound.play();
 				}
 			}
 			if(keydown.p) {
@@ -370,7 +371,7 @@ var kitty_jump = (function(){
     	I.color = "#A2B";
 
     	I.x = CANVAS_WIDTH;
-    	I.y = (CANVAS_HEIGHT-50) - Math.random() * CANVAS_HEIGHT;
+    	I.y = (CANVAS_HEIGHT-150) - Math.random() * CANVAS_HEIGHT;
     	I.xVelocity = 3 + (Math.random() - .5);
     	I.yVelocity = 0;
 
@@ -419,7 +420,7 @@ var kitty_jump = (function(){
     	I.color = "#A2B";
 
     	I.x = CANVAS_WIDTH;
-    	I.y = (CANVAS_HEIGHT-50) - Math.random() * CANVAS_HEIGHT;
+    	I.y = (CANVAS_HEIGHT-150) - Math.random() * CANVAS_HEIGHT;
     	I.xVelocity = 3 + (Math.random() - .5);
     // 	I.yVelocity = 0;
 
@@ -464,7 +465,7 @@ var kitty_jump = (function(){
     function handleCollisions() {
     	kibbles.forEach(function(kibble) {
     		if(collides(kibble, player)) {
-    			soundFx.play();
+    		// 	soundFx.play();
     			score++;
     			kibble.active = false;
     			if(score%10===0 && player.lives.count > 0)player.lives.count++;
@@ -501,6 +502,7 @@ var kitty_jump = (function(){
     }
 
 function setup(){
+
     	var canvasElement = document.getElementById('game');
     	context = canvasElement.getContext('2d');
     	var div = document.getElementById('wrapper');
@@ -515,7 +517,7 @@ function setup(){
     	startScreen.setAttribute("style", "width:" + CANVAS_WIDTH + "px;height:" + CANVAS_HEIGHT + "px");
     	$('#start').addClass('visibile');
 
-    	bgSound.volume = .80;
+    	bgSound.volume = .40;
    /* 	bgSound.addEventListener('ended', function() {
     		this.currentTime = 0;
     		this.play();
@@ -530,6 +532,7 @@ function update(){
 }
 function draw(){
 context.clearRect(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
+
 
 player.draw();
 playerBullets.forEach(function(bullet) {
@@ -547,7 +550,7 @@ for(var x = 0; x < player.lives.count; x++){
 }
 
 context.fillText("SCORE: " + score, CANVAS_WIDTH-100, CANVAS_HEIGHT-20);
-
+powerBar.draw(context);
 
 }
 function loop(){
