@@ -31,6 +31,7 @@ var kitty_jump = (function(){
 	var gravity = 1;
 	var powerBar = new Powerbar({x: 300, y: CANVAS_HEIGHT-30});
 	var player = {
+		startY: CANVAS_HEIGHT-100,
 		x: 30,
 		y: CANVAS_HEIGHT-100,
 		yStep: 1,
@@ -49,9 +50,9 @@ var kitty_jump = (function(){
 		isJumping: false,
 		isFalling: false,
 		draw: function(){
-			// if(this.isJumping){
-			// 	this.jump();
-			// }
+			if(this.isJumping && !this.isFalling || this.isJumping){
+				this.jump(this.velocity);
+			}
 			context.drawImage(player.image, this.x, this.y);
 		},
 		shoot: function() {
@@ -74,24 +75,21 @@ var kitty_jump = (function(){
 			if(player.lives.count == 0)currentGameState = 300;
 		},
 		jump: function(velocity){
-			if(this.velocityY <= 0 && !this.isFalling){
-				this.isFalling = true;
-			}
-
-			if(this.isFalling){
-				this.velocityY += gravity;
-				if(this.velocityY >= this.initialVelocityY){
+			if(this.isJumping){
+				this.velocityY -= velocity;
+				if(this.velocityY <= 0 || this.y <= 0){
 					this.isJumping = false;
-					this.isFalling = false;
+					this.isFalling = true;
 				}
-				else {
-					this.y += this.velocityY;
-				}
+				this.y -= this.velocityY;
 			}
-
-			if(!this.isFalling){
-				this.velocityY -= gravity + velocity;
-				this.y -=  this.velocityY;
+			if(this.isFalling){
+				this.velocityY += velocity;
+				if(this.y >= this.startY){
+					this.isFalling = false;
+					this.isJumping = false;
+					this.velocityY = 0;
+				}
 			}
 		}
 	};
@@ -170,13 +168,14 @@ var kitty_jump = (function(){
 				if(frames%10===0)player.shoot();
 			}
 			if(keydown.w) {
-				// player.isJumping = true;
 				keydown.w = false;
 				powerBar.start();
 			}
 			if(keyup.w){
 				var velocity = powerBar.pause();
-				player.jump(velocity);
+				player.isJumping = true;
+				player.velocity = velocity;
+				// player.jump(velocity);
 
 			}
 			if(keydown.d) {

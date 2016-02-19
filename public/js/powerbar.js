@@ -1,13 +1,15 @@
 var increasing = true;
-var increaseDecrease = function(min, max, increment, current){
+var increaseDecrease = function(min, max, current){
 	if(current >= max){
 		increasing = false;
 	}
 	else if(current <= min)increasing = true;
 
-	if(increasing)current += increment;
+	if(increasing){
+		current++;
+	}
 	else{
-		current -= increment;
+		current--;
 	}
 	return current;
 };
@@ -24,20 +26,24 @@ var Slider = function(args){
 	this.background = args.background || 'black';
 	this.play = false;
 	this.increment = args.increment || .5;
+	this.powerBar = args.powerBar || null;
+	this.currentPower = 0;
 };
+
+var determinePower = function(currentValue, width, max, increment){
+	var power = 0;
+	var ratio = currentValue / width;
+	power = ratio * max;
+	return power;
+}
 
 Slider.prototype.draw = function(context){
 	var slider = this;
 
 	if(this.play){
-		this.current = increaseDecrease(this.min, this.max, this.increment, this.current);
+		this.current = increaseDecrease(this.min, this.powerBar.width - this.width, this.current);
+		this.currentPower = determinePower(this.current, this.width, this.max, this.increment);
 	}
-}
-
-Slider.prototype.playAnimation = function(){
-	var numberOfSteps = this.max / this.increment;
-	var range = this.width - this.width;
-	var steps = range / numberOfSteps;
 	context.beginPath();
 	context.fillStyle = this.background;
 	context.moveTo(this.x + this.current, this.y);
@@ -55,7 +61,7 @@ var Powerbar = function(args){
 	this.background = args.background || 'pink';
 	this.min = args.min || 0;
 	this.max = args.max || 10;
-	this.slider = args.slider || new Slider({x: this.x, y: this.y, max: this.max, min: this.min});
+	this.slider = args.slider || new Slider({x: this.x, y: this.y, max: this.max, min: this.min, powerBar: this});
 	this.playSlider = false;
 };
 
