@@ -49,9 +49,9 @@ var kitty_jump = (function(){
 		isJumping: false,
 		isFalling: false,
 		draw: function(){
-			if(this.isJumping){
-				this.jump();
-			}
+			// if(this.isJumping){
+			// 	this.jump();
+			// }
 			context.drawImage(player.image, this.x, this.y);
 		},
 		shoot: function() {
@@ -73,7 +73,7 @@ var kitty_jump = (function(){
 			player.lives.count--;
 			if(player.lives.count == 0)currentGameState = 300;
 		},
-		jump: function(){
+		jump: function(velocity){
 			if(this.velocityY <= 0 && !this.isFalling){
 				this.isFalling = true;
 			}
@@ -89,8 +89,8 @@ var kitty_jump = (function(){
 				}
 			}
 
-			if(this.isJumping && !this.isFalling){
-				this.velocityY -= gravity;
+			if(!this.isFalling){
+				this.velocityY -= gravity + velocity;
 				this.y -=  this.velocityY;
 			}
 		}
@@ -152,7 +152,7 @@ var kitty_jump = (function(){
 			currentGameState = 175;
 			}
 		},
-		"200" : function(){
+		"200" : function(){ // play game
 			if(previousGameState != currentGameState){
 				previousGameState = currentGameState;
 				if(!gameSound.muted){
@@ -170,8 +170,14 @@ var kitty_jump = (function(){
 				if(frames%10===0)player.shoot();
 			}
 			if(keydown.w) {
-				player.isJumping = true;
+				// player.isJumping = true;
 				keydown.w = false;
+				powerBar.start();
+			}
+			if(keyup.w){
+				var velocity = powerBar.pause();
+				player.jump(velocity);
+
 			}
 			if(keydown.d) {
 				player.x += 5;
