@@ -1,2 +1,3 @@
 /lib
-bower_components
+bower_components/
+*.*~
