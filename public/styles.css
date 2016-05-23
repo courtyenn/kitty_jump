@@ -1,4 +1,6 @@
-
+* {
+  font-family: sans-serif;
+}
 
 #wrapper{
 	position:relative;
@@ -7,7 +9,7 @@
 }
 
 #game{
-	background:url('../images/kitty_bg.jpg');
+	background:url('./images/kitty_bg.jpg');
 	display:block;
 	position:absolute;
 	z-index:1;
@@ -105,7 +107,7 @@ p{
 	right: 1.0rem;
 }
 #instructions {
-	background: url('../images/kitty_carpet.jpg');
+	background: url('./images/kitty_carpet.jpg');
 	min-height: 550px;
 }
 .instructions h1 {
