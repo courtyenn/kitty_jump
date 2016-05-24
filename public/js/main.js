@@ -9,9 +9,6 @@ $(window).ready(function(){
   kitty_jump.playGame();
 });
 
-$(document).bind('keydown', handleKeyPress);
-$(document).bind('keyup', handleKeyRelease);
-
 var kitty_jump = (function(){
   var CANVAS_WIDTH = 650;
   var CANVAS_HEIGHT = 500;
@@ -33,7 +30,7 @@ var kitty_jump = (function(){
   var enemy = new Image();
   var enemies = [];
   var playerBullets = [];
-  //var gravity = 1; // 9.8m/s^2 / FPS = .16
+  var gravity = .16; // 9.8m/s^2 / FPS = .16
   var powerBar = new Powerbar({x: 300, y: CANVAS_HEIGHT-30});
   var time = 0;
   var player = {
@@ -47,7 +44,7 @@ var kitty_jump = (function(){
       count: 9,
       image: new Image()
     },
-    initialVelocityY: 30,
+    initialVelocityY: 2,
     velocityY: 30,
     velocityX: 0,
     time: 0,
@@ -57,11 +54,11 @@ var kitty_jump = (function(){
     isFalling: false,
     draw: function(){
       if(this.isJumping){
-        this.jump(this.velocity);
+        this.jump();
       }
-      // else {
-      //   this.fall();
-      // }
+      else if(this.isFalling) {
+        this.fall();
+      }
       context.drawImage(player.image, this.x, this.y);
     },
     shoot: function() {
@@ -83,26 +80,38 @@ var kitty_jump = (function(){
       player.lives.count--;
       if(player.lives.count == 0)currentGameState = 300;
     },
-    jump: function(velocity){
-      // this.velocityY = (velocity * this.time) - ((1/2) * gravity * Math.pow(this.time, 2));
-      this.velocityY = velocity;
+    jumpOn: function(){
+      this.isJumping = true;
+    },
+    jump: function(){
+      this.velocityY = (this.initialVelocityY * this.time) - ((1/2) * gravity * Math.pow(this.time, 2));
+      // this.velocityY = this.initialVelocityY;
       if(this.isJumping){
-        if(this.velocityY < 0 || (this.y <= (this.height*2)) ){
+        if(this.y <= 0 || this.velocityY < 0 ){
           this.isJumping = false;
           this.isFalling = true;
+          this.time = 0;
         }
-        this.y -= (this.velocityY);
+        else {
+          this.y -= (this.velocityY);
+          this.time = this.time + 1;
+        }
+
       }
-      this.time = this.time + 1;
     },
     fall: function(){
-      this.velocityY = 6;
-      if(this.y >= this.startY){
+      this.velocityY = gravity * this.time;
+      this.y += (this.velocityY);
+      if(this.y >= (this.startY) ){
         this.isFalling = false;
         this.isJumping = false;
+        this.time = 0;
+        this.y = this.startY;
       }
-      this.y += (this.velocityY);
-      this.time = this.time + 1;
+      else {
+
+        this.time = this.time + 1;
+      }
     }
   };
 
@@ -122,10 +131,10 @@ var kitty_jump = (function(){
         gameSound.muted = true;
       }
 
-      if(keydown.o){
-        currentGameState = 200;s
-        $('#pause').addClass('invisible');
-      }
+      // if(keydown.o){
+      //   currentGameState = 200;s
+      //   $('#pause').addClass('invisible');
+      // }
     },
     "100" : function(){
       if(previousGameState != currentGameState){
@@ -136,20 +145,20 @@ var kitty_jump = (function(){
         }
       }
 
-      if(keydown.m){
-        keydown.m = false;
-        currentGameState = 150;
-      }
+      // if(keydown.m){
+      //   keydown.m = false;
+      //   currentGameState = 150;
+      // }
     },
     "150" : function(){
       if(previousGameState != currentGameState){
         previousGameState = currentGameState;
         bgSound.muted = true;
       }
-      if(keydown.m){
-        keydown.m = false;
-        currentGameState = 100;
-      }
+      // if(keydown.m){
+      //   keydown.m = false;
+      //   currentGameState = 100;
+      // }
     },
     "175" : function(){
       if(previousGameState != currentGameState){
@@ -157,10 +166,10 @@ var kitty_jump = (function(){
         $('#start').addClass('invisible');
         $('#instructions').removeClass('invisible');
       }
-      if(keydown.m){
-        keydown.m = false;
-        currentGameState = 175;
-      }
+      // if(keydown.m){
+      //   keydown.m = false;
+      //   currentGameState = 175;
+      // }
     },
     "200" : function(){ // play game
       if(previousGameState != currentGameState){
@@ -169,33 +178,33 @@ var kitty_jump = (function(){
           gameSound.play();
         }
       }
-      if(keydown.p) {
-        currentGameState = 0;
-      }
-      if(keydown.m){
-        keydown.m = false;
-        currentGameState = 400;
-      }
-      if(keydown.space) {
-        if(frames%10===0)player.shoot();
-      }
-      if(keydown.w) {
-        keydown.w = false;
-        powerBar.start();
-      }
-      if(keyup.w){
-        var velocity = powerBar.pause();
-        player.isJumping = true;
-        this.time = 0;
-        this.startY = this.y;
-        player.velocity = 1;
-      }
-      if(keydown.d) {
-        player.x += 5;
-      }
-      if(keydown.a) {
-        player.x -= 5;
-      }
+      // if(keydown.p) {
+      //   currentGameState = 0;
+      // }
+      // if(keydown.m){
+      //   keydown.m = false;
+      //   currentGameState = 400;
+      // }
+      // if(keydown.space) {
+      //   if(frames%10===0)player.shoot();
+      // }
+      // if(keydown.w) {
+      //   keydown.w = false;
+      //   powerBar.start();
+      // }
+      // if(keyup.w){
+      //   var velocity = powerBar.pause();
+      //   player.isJumping = true;
+      //   this.time = 0;
+      //   this.startY = this.y;
+      //   player.velocity = 1;
+      // }
+      // if(keydown.d) {
+      //   player.x += 5;
+      // }
+      // if(keydown.a) {
+      //   player.x -= 5;
+      // }
 
       playerBullets.forEach(function(bullet) {
         bullet.update();
@@ -254,26 +263,26 @@ var kitty_jump = (function(){
       gameSound.muted = true;
       soundFx.muted = true;
       /** PAUSED **/
-      if(keydown.p) {
-        currentGameState = 0;
-      }
+      // if(keydown.p) {
+      //   currentGameState = 0;
+      // }
       /** MUTE **/
-      if(keydown.m){
-        keydown.m = false;
-        currentGameState = 200;
-      }
+      // if(keydown.m){
+      //   keydown.m = false;
+      //   currentGameState = 200;
+      // }
       /** ATTACK **/
-      if(keydown.space) {
-        if(frames%10===0)player.shoot();
-      }
+      // if(keydown.space) {
+      //   if(frames%10===0)player.shoot();
+      // }
       /** MOVE UP**/
-      if(keydown.w) {
-        player.y -= 5;
-      }
+      // if(keydown.w) {
+      //   player.y -= 5;
+      // }
       /** MOVE DOWN **/
-      if(keydown.s) {
-        player.y += 5;
-      }
+      // if(keydown.s) {
+      //   player.y += 5;
+      // }
 
       playerBullets.forEach(function(bullet) {
         bullet.update();
@@ -542,6 +551,9 @@ var kitty_jump = (function(){
   //	bgSound.play();
   soundFx.volume = .28;
   gameDead.volume = .20;
+
+  KeyHandler.keyMap = keyCodes;
+  KeyHandler.setKeyDownAction('w', player.jumpOn.bind(player));
 
 }
 function update(){
