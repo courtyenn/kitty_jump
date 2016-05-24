@@ -1,69 +1,63 @@
-* {
-  font-family: sans-serif;
+@import url(https://fonts.googleapis.com/css?family=Caveat+Brush);
+html{
+  font-size: 62.5%
 }
-
+body{
+  font-size: 1.3rem;
+}
 #wrapper{
-	position:relative;
+	position: relative;
 	margin: 0 auto;
-
+	font-family: 'Caveat Brush';
 }
-
 #game{
-	background:url('./images/kitty_bg.jpg');
-	display:block;
-	position:absolute;
-	z-index:1;
-	/*background-size: cover;*/
+	background: url('./images/kitty_bg.jpg');
+	display: block;
+	position: absolute;
+	z-index: 1;
 }
-
 #start,#game-over,#pause{
 	background: none repeat scroll 0% 0% rgba(255,255,255, 0.8);
 	position: absolute;
-	z-index:2;
-	color:black;
+	z-index: 2;
+	color: black;
 }
-
 #start{
 	color:black;
-
-
+	background: url('./images/kitty_start.jpg');
+	background-size: cover;
+  position: relative;
 }
-
+#start input {
+  position: relative;
+  top: 67%;
+  color: white;
+  font-size: 1.5rem;
+  padding: 1.0rem;
+  background: #47BE55;
+  border: none;
+}
 #start p, #start ol{
 	padding: 10px 40px;
 }
-
-#game-over{
-	visibility:hidden;
-}
-
-#pause{
-	visibility: hidden;
-}
-
 .butt{
-
 	padding: 11px 23px;
 	text-decoration: none;
 	color: black;
-
 	font-size: 16px;
 }
-
 .butt-good{
 	background: rgb(86, 209, 204);
 	border: 1px solid rgb(4, 180, 173);
 }
-
 .butt-exit{
 	background: rgb(238, 117, 117);
 	border: 1px solid rgb(187, 58, 58);
 }
-
 .invisible{
 	visibility: hidden !important;
+	display: none;
 }
-
 .visible{
 	visibility: visible !important;
 }
@@ -108,10 +102,10 @@ p{
 }
 #instructions {
 	background: url('./images/kitty_carpet.jpg');
-	min-height: 550px;
+  height: 550px;
 }
 .instructions h1 {
-	padding: 65px 0 30px 0;
+  padding: 0px 0 30px 0;
 	text-align: center;
 }
 .instructions {
@@ -125,4 +119,5 @@ p{
 }
 .instructions .row {
 	padding-bottom: 30px;
+  height: 13.9rem;
 }

@@ -1,4 +1,4 @@
-  // var ROOT = '/wp-content/themes/clean-slate/js/kitty_jump/public/'; // need to get rid of hard code
+// var ROOT = '/wp-content/themes/clean-slate/js/kitty_jump/public/'; // need to get rid of hard code
 var ROOT = './';
 var bgSound = new Audio(ROOT+'sound/meowmix.mp3');
 var gameSound = new Audio(ROOT+'sound/monkeyspinning.mp3');
@@ -8,6 +8,9 @@ var gameDead = new Audio(ROOT+'sound/catscream.mp3');
 $(window).ready(function(){
   kitty_jump.playGame();
 });
+
+$(document).bind('keydown', handleKeyPress);
+$(document).bind('keyup', handleKeyRelease);
 
 var kitty_jump = (function(){
   var CANVAS_WIDTH = 650;
@@ -30,8 +33,9 @@ var kitty_jump = (function(){
   var enemy = new Image();
   var enemies = [];
   var playerBullets = [];
-  var gravity = 1;
+  //var gravity = 1; // 9.8m/s^2 / FPS = .16
   var powerBar = new Powerbar({x: 300, y: CANVAS_HEIGHT-30});
+  var time = 0;
   var player = {
     startY: CANVAS_HEIGHT-100,
     x: 30,
@@ -52,9 +56,12 @@ var kitty_jump = (function(){
     isJumping: false,
     isFalling: false,
     draw: function(){
-      if(this.isJumping && !this.isFalling){
+      if(this.isJumping){
         this.jump(this.velocity);
       }
+      // else {
+      //   this.fall();
+      // }
       context.drawImage(player.image, this.x, this.y);
     },
     shoot: function() {
@@ -77,22 +84,25 @@ var kitty_jump = (function(){
       if(player.lives.count == 0)currentGameState = 300;
     },
     jump: function(velocity){
+      // this.velocityY = (velocity * this.time) - ((1/2) * gravity * Math.pow(this.time, 2));
+      this.velocityY = velocity;
       if(this.isJumping){
-        this.velocityY -= velocity;
-        if(this.velocityY <= 0 || this.y <= 0){
+        if(this.velocityY < 0 || (this.y <= (this.height*2)) ){
           this.isJumping = false;
           this.isFalling = true;
         }
-        this.y -= this.velocityY;
+        this.y -= (this.velocityY);
       }
-      if(this.isFalling){
-        this.velocityY += velocity;
-        if(this.y >= this.startY){
-          this.isFalling = false;
-          this.isJumping = false;
-          this.velocityY = 0;
-        }
+      this.time = this.time + 1;
+    },
+    fall: function(){
+      this.velocityY = 6;
+      if(this.y >= this.startY){
+        this.isFalling = false;
+        this.isJumping = false;
       }
+      this.y += (this.velocityY);
+      this.time = this.time + 1;
     }
   };
 
@@ -176,9 +186,9 @@ var kitty_jump = (function(){
       if(keyup.w){
         var velocity = powerBar.pause();
         player.isJumping = true;
-        player.velocity = velocity;
-        // player.jump(velocity);
-
+        this.time = 0;
+        this.startY = this.y;
+        player.velocity = 1;
       }
       if(keydown.d) {
         player.x += 5;

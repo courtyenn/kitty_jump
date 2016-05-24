@@ -1,75 +1,74 @@
-<!doctype html>
-<!-- really out of date.. check single-projects.php -->
+<!DOCTYPE>
+<html>
 <head>
-	<meta charset="utf-8">
+  <meta charset="utf-8">
 
-	<title>Kitty Game</title>
+  <title>Kitty Game</title>
 
-	<link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-	<div id="wrapper">
-		<!--<canvas id="menu"></canvas>-->
+  <div id="wrapper">
+    <div id="start">
+      <input id="" type="submit" class="butt butt-good go-to-instructions center-blk" value="Play Game!"/>
+    </div>
 
-		<div id="start">
-			<h1 class="txt-center">Kitty Jump!</h1>
-			<div class="">
-				<div class="">
-					<h3>This is you:</h3>
-					<img src="images/kitty_cat.png" />
-					<p class="float-rt">
-						You have 9 lives: <img src="images/life.png" />x9
-					</p>
-				</div>
-				<div class="">
-					<div class="">
-						<h3>Eat kibbles:</h3>
-						<img src="images/kibble_O_lg.png"/><img src="images/kibble_X_lg.png"/>
-						<p class="float-rt">
-						AVOID hitting kibbles... You will lose points!
-					</p>
-					</div>
-					<div class="">
-						<h3>Do <span class="bold">NOT</span> eat candy:</h3>
+    <div id="game-over" class="invisible">
+      <h1 class="txt-center">GAME OVER</h1>
+      <a class="butt butt-good lt-butt start-game" href="#">Play again?</a>
+      <a id="main-menu" class="butt butt-exit rt-butt main-menu" href="#">Main Menu</a>s
+    </div>
 
-						<img class="wd-100" src="images/candy.png"/>
-					</div>
-				</div>
-				<div class="">
-					Press P to pause
-				</div>
-			</div>
-			<input id="" type="submit" class="butt butt-good start-game center-blk" value="Play Game!"/>
-		</div>
-
-		<div id="game-over">
-			<h1 class="txt-center">GAME OVER</h1>
-			<a class="butt butt-good lt-butt start-game" href="#">Play again?</a><a id="main-menu" class="butt butt-exit rt-butt" href="#">Main Menu</a>
-		</div>
-
-
-		<div id="pause">
-			<h1 class="txt-center">PAUSED</h1>
-			<h3 class="txt-center">Press 'O' To Continue</h3></div>
-
-			<audio loop="true"></audio>
-			<canvas id="game"></canvas>
-			<button id="mute">MUTE</button>
-		</div>
-
-		<div id="mute">
-			<button>MUTE</button>
-		</div>
-
-		<script language="javascript" src="lib/jquery.min.js" type="text/javascript"></script>
-		<script language="javascript" src="lib/jquery.hotkeys.js" type="text/javascript"></script>
-		<script language="javascript" src="lib/key_status.js" type="text/javascript"></script>
-		<script language="javascript" src="lib/util.js" type="text/javascript"></script>
-		<script language="javascript" src="lib/sprite.js" type="text/javascript"></script>
-		<!-- <script language="javascript" src="js/sound.js" ></script> -->
-		<script language="javascript" type="text/javascript" src="./js/powerbar.js"></script>
-		<script language="javascript" type="text/javascript" src="./js/main.js"></script>
-	</body>
+    <div id="instructions" class="invisible">
+      <div class="instructions">
+        <h1>Instructions</h1>
+        <div class="row">
+          <div class="float-lt">
+            <h3>This is you:</h3>
+            <img src="./images/kitty_cat.png" />
+            <img src="./images/life.png" />x9
+          </div>
+          <div class="float-rt">
+            <h3>Do not eat candy:</h3>
+            <img class="wd-100" src="./images/candy.png"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="float-lt">
+            <h3>Eat kibbles:</h3>
+            <img src="./images/kibble_O_lg.png"/>
+            <img src="./images/kibble_X_lg.png"/>
+          </div>
+          <div class="float-rt">
+            Press P to pause
+          </div>
+        </div>
+        <button class="butt butt-good start-game">Play!</button>
+        <button class="butt butt-exit main-menu">Back</button>
+      </div>
+    </div>
 
 
-	</html>
+    <div id="pause" class="invisible">
+      <h1 class="txt-center">PAUSED</h1>
+      <h3 class="txt-center">Press 'O' To Continue</h3>
+    </div>
+    <audio loop="true"></audio>
+    <canvas id="game" class="invisible"></canvas>
+    <button id="mute">MUTE</button>
+  </div>
+</div>
+
+<script src="./js/keyHandler.js"></script>
+<script language="javascript" src="lib/jquery.min.js" type="text/javascript"></script>
+<script language="javascript" src="lib/jquery.hotkeys.js" type="text/javascript"></script>
+<script language="javascript" src="lib/key_status.js" type="text/javascript"></script>
+<script language="javascript" src="lib/util.js" type="text/javascript"></script>
+<script language="javascript" src="lib/sprite.js" type="text/javascript"></script>
+<!-- <script language="javascript" src="js/sound.js" ></script> -->
+<script language="javascript" type="text/javascript" src="./js/powerbar.js"></script>
+<script language="javascript" type="text/javascript" src="./js/main.js"></script>
+</body>
+
+
+</html>
