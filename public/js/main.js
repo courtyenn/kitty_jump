@@ -4,6 +4,7 @@ var bgSound = new Audio(ROOT+'sound/meowmix.mp3');
 var gameSound = new Audio(ROOT+'sound/monkeyspinning.mp3');
 var soundFx = new Audio(ROOT+'sound/catmeow.mp3');
 var gameDead = new Audio(ROOT+'sound/catscream.mp3');
+var jumpKey = {};
 
 $(window).ready(function(){
   kitty_jump.playGame();
@@ -30,7 +31,7 @@ var kitty_jump = (function(){
   var enemy = new Image();
   var enemies = [];
   var playerBullets = [];
-  var gravity = .16; // 9.8m/s^2 / FPS = .16
+  var gravity = 3; // 9.8m/s^2 / FPS = .16
   var powerBar = new Powerbar({x: 300, y: CANVAS_HEIGHT-30});
   var time = 0;
   var player = {
@@ -45,13 +46,13 @@ var kitty_jump = (function(){
       image: new Image()
     },
     initialVelocityY: 2,
-    velocityY: 30,
-    velocityX: 0,
+    velocityY: 2,
     time: 0,
     peakY: 0,
     image: new Image(),
     isJumping: false,
     isFalling: false,
+    canJump: true,
     draw: function(){
       if(this.isJumping){
         this.jump();
@@ -84,17 +85,18 @@ var kitty_jump = (function(){
       this.isJumping = true;
     },
     jump: function(){
-      this.velocityY = (this.initialVelocityY * this.time) - ((1/2) * gravity * Math.pow(this.time, 2));
+      this.canJump = false;
+      this.velocityY = this.velocityY - ((this.initialVelocityY * this.time) - ((1/2) * gravity * Math.pow(this.time, 2)));
       // this.velocityY = this.initialVelocityY;
       if(this.isJumping){
         if(this.y <= 0 || this.velocityY < 0 ){
           this.isJumping = false;
           this.isFalling = true;
-          this.time = 0;
+          this.time = 1;
         }
         else {
           this.y -= (this.velocityY);
-          this.time = this.time + 1;
+          this.time = this.time + .22;
         }
 
       }
@@ -105,12 +107,13 @@ var kitty_jump = (function(){
       if(this.y >= (this.startY) ){
         this.isFalling = false;
         this.isJumping = false;
+        this.canJump = true;
         this.time = 0;
         this.y = this.startY;
       }
       else {
 
-        this.time = this.time + 1;
+        this.time = this.time + .22;
       }
     }
   };
@@ -553,9 +556,13 @@ var kitty_jump = (function(){
   gameDead.volume = .20;
 
   KeyHandler.keyMap = keyCodes;
-  KeyHandler.setKeyDownAction('w', player.jumpOn.bind(player));
+  KeyHandler.setKeyDownAction('w', player.jumpOn.bind(player), checkIfPlayerShouldJump);
 
 }
+function checkIfPlayerShouldJump(){
+  return player.canJump;
+}
+
 function update(){
   gamestates[currentGameState + ""]();
 }

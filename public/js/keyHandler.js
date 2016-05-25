@@ -1,13 +1,16 @@
 var KeyHandler = new function(){
   this.keyMap = {};
   this.actionInProgress = false;
-  this.setKeyDownAction = function(key, action){
+  this.setKeyDownAction = function(key, action, conditionBeforeFiringNextAction){
     if(this.keyMap[key] !== null){
       this.keyMap[key] = {
         keyDownAction: action,
         pressed: false,
         wasPressed: false
       };
+      if(conditionBeforeFiringNextAction){
+        this.keyMap[key].condition = conditionBeforeFiringNextAction;
+      }
     }
   };
 
@@ -15,9 +18,17 @@ var KeyHandler = new function(){
     var key = String.fromCharCode(event.keyCode).toLowerCase();
     if(this.keyMap[key] && this.keyMap[key].keyDownAction){
       if(!this.keyMap[key].pressed){
-        this.keyMap[key].keyDownAction();
-        this.keyMap[key].wasPressed = false;
-        this.keyMap[key].pressed = true;
+        if(this.keyMap[key].condition()){
+          this.keyMap[key].keyDownAction();
+          this.keyMap[key].wasPressed = false;
+          this.keyMap[key].pressed = true;
+        }
+        else if(typeof this.keyMap[key].condition === 'undefined'){
+          this.keyMap[key].keyDownAction();
+          this.keyMap[key].wasPressed = false;
+          this.keyMap[key].pressed = true;
+        }
+
       }
     }
   };
