@@ -85,23 +85,25 @@ var kitty_jump = (function(){
       this.isJumping = true;
     },
     jump: function(){
-      this.canJump = false;
-      this.velocityY = this.velocityY - ((this.initialVelocityY * this.time) - ((1/2) * gravity * Math.pow(this.time, 2)));
-      // this.velocityY = this.initialVelocityY;
-      if(this.isJumping){
-        if(this.y <= 0 || this.velocityY < 0 ){
-          this.isJumping = false;
-          this.isFalling = true;
-          this.time = 1;
+      if(currentGameState !== 300){
+        this.canJump = false;
+        this.velocityY = this.velocityY - ((this.initialVelocityY * this.time) - ((1/2) * gravity * Math.pow(this.time, 2)));
+        // this.velocityY = this.initialVelocityY;
+        if(this.isJumping){
+          if(this.y <= 0 || this.velocityY < 0 ){
+            this.isJumping = false;
+            this.isFalling = true;
+            this.time = 1;
+          }
+          else {
+            this.y -= (this.velocityY);
+            this.time = this.time + .22;
+          }
         }
-        else {
-          this.y -= (this.velocityY);
-          this.time = this.time + .22;
-        }
-
       }
     },
     fall: function(){
+      if(currentGameState !== 300){
       this.velocityY = gravity * this.time;
       this.y += (this.velocityY);
       if(this.y >= (this.startY) ){
@@ -116,6 +118,7 @@ var kitty_jump = (function(){
         this.time = this.time + .22;
       }
     }
+  }
   };
 
   (function(){
@@ -131,7 +134,7 @@ var kitty_jump = (function(){
       if(previousGameState != currentGameState){
         previousGameState = currentGameState;
         $('#pause').removeClass('invisible');
-        gameSound.muted = true;
+        gameSound.pause();
       }
 
       // if(keydown.o){
@@ -156,7 +159,7 @@ var kitty_jump = (function(){
     "150" : function(){
       if(previousGameState != currentGameState){
         previousGameState = currentGameState;
-        bgSound.muted = true;
+        bgSound.pause();
       }
       // if(keydown.m){
       //   keydown.m = false;
@@ -177,9 +180,10 @@ var kitty_jump = (function(){
     "200" : function(){ // play game
       if(previousGameState != currentGameState){
         previousGameState = currentGameState;
-        if(!gameSound.muted){
-          gameSound.play();
-        }
+      }
+      bgSound.pause();
+      if(!gameSound.muted){
+        gameSound.play();
       }
       // if(keydown.p) {
       //   currentGameState = 0;
@@ -249,9 +253,9 @@ var kitty_jump = (function(){
         previousGameState = currentGameState;
         if(!gameSound.muted){
           gameSound.pause();
-          if(!gameDead.muted){
-            gameDead.play();
-          }
+        }
+        if(!gameDead.muted){
+          gameDead.play();
         }
 
         $('#game-over').removeClass('invisible');
@@ -327,30 +331,24 @@ var kitty_jump = (function(){
         soundFx.muted = !soundFx.muted;
         bgSound.muted = !bgSound.muted;
         gameDead.muted = !gameDead.muted;
-        if(gameSound.muted){
-          gameSound.pause();
-        }
-        else {
-          gameSound.play();
-        }
-        if(soundFx.muted){
-          soundFx.pause();
-        }
-        else{
-          soundFx.play();
-        }
-        if(bgSound.muted){
-          bgSound.pause();
-        }
-        else{
-          bgSound.pause();
-        }
-        if(gameDead.muted){
-          gameDead.pause();
-        }
-        else {
-          gameDead.pause();
-        }
+        // if(gameSound.muted){
+        //   gameSound.pause();
+        // }
+        // else {
+        //   gameSound.play();
+        // }
+        // if(soundFx.muted){
+        //   soundFx.pause();
+        // }
+        // if(bgSound.muted){
+        //   bgSound.pause();
+        // }
+        // else{
+        //   bgSound.pause();
+        // }
+        // if(gameDead.muted){
+        //   gameDead.pause();
+        // }
         currentGameState = previousGameState;
       }
     }
@@ -494,7 +492,7 @@ var kitty_jump = (function(){
   function handleCollisions() {
     kibbles.forEach(function(kibble) {
       if(collides(kibble, player)) {
-        // 	soundFx.play();
+        soundFx.play();
         score++;
         kibble.active = false;
         if(score%10===0 && player.lives.count > 0)player.lives.count++;
@@ -546,14 +544,16 @@ var kitty_jump = (function(){
     startScreen.setAttribute("style", "width:" + CANVAS_WIDTH + "px;height:" + CANVAS_HEIGHT + "px");
     $('#start').addClass('visibile');
 
-    bgSound.volume = .30;
+
     /* 	bgSound.addEventListener('ended', function() {
     this.currentTime = 0;
     this.play();
   }, false); */
   //	bgSound.play();
-  soundFx.volume = .28;
-  gameDead.volume = .20;
+  bgSound.volume = .1;
+  gameSound.volume = .1;
+  soundFx.volume = .05;
+  gameDead.volume = .1;
 
   KeyHandler.keyMap = keyCodes;
   KeyHandler.setKeyDownAction('w', player.jumpOn.bind(player), checkIfPlayerShouldJump);
@@ -596,7 +596,11 @@ function loop(){
 }
 
 function init(){
-  player.lives.count > 0 ? player.lives.count : 9;
+  player.lives.count = 9;
+  player.y = player.startY;
+  player.canJump = true;
+  player.isJumping = false;
+  player.isFalling = false;
   score = 0;
   enemies = [];
   kibbles = [];
@@ -604,7 +608,9 @@ function init(){
 }
 
 $('.start-game').on('click', function(event){
-  if(currentGameState == 300)$('#game-over').addClass('invisible');
+  if(currentGameState == 300){
+    $('#game-over').addClass('invisible');
+  }
   event.preventDefault();
   currentGameState = 200;
   $('#start').addClass('invisible');
@@ -618,6 +624,8 @@ $('.main-menu').on('click', function(event){
   currentGameState = 100;
   $('#start').removeClass('invisible');
   $('#game-over').addClass('invisible');
+  $('#instructions').addClass('invisible');
+  $('#game').addClass('invisible');
 });
 $('#mute').on('click', function(event){
   event.preventDefault();
@@ -632,6 +640,7 @@ $('.go-to-instructions').on('click', function(event){
   currentGameState = 175;
   $('#start').addClass('invisible');
   $('#instructions').removeClass('invisible');
+  $('#game').addClass('invisible');
 });
 
 return {
