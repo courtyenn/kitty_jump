@@ -634,7 +634,7 @@ $('.go-to-instructions').on('click', function(event){
 return {
   playGame : function playGame(root){
     if(root){
-      ROOT = root;
+      ROOT = root.ROOT;
     }
     player.image.src = ROOT+"images/kitty_cat.png";
     enemy.src = ROOT+"images/candy_sm.png";
