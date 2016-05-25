@@ -6,10 +6,6 @@ var soundFx = new Audio(ROOT+'sound/catmeow.mp3');
 var gameDead = new Audio(ROOT+'sound/catscream.mp3');
 var jumpKey = {};
 
-$(window).ready(function(){
-  kitty_jump.playGame();
-});
-
 var kitty_jump = (function(){
   var CANVAS_WIDTH = 650;
   var CANVAS_HEIGHT = 500;
@@ -644,7 +640,10 @@ $('.go-to-instructions').on('click', function(event){
 });
 
 return {
-  playGame : function playGame(){
+  playGame : function playGame(root){
+    if(root){
+      ROOT = root;
+    }
     setup();
     myTimer = setInterval(function(){
       loop();
