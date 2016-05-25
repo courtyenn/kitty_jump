@@ -117,14 +117,6 @@ var kitty_jump = (function(){
   }
   };
 
-  (function(){
-    player.image.src = ROOT+"images/kitty_cat.png";
-    enemy.src = ROOT+"images/candy_sm.png";
-    player.lives.image.src = ROOT+"images/life.png";
-    kibble_O.src = ROOT+"images/kibble_O.png";
-    kibble_X.src = ROOT+"images/kibble_X.png";
-  })();
-
   gamestates = {
     "0" : function(){
       if(previousGameState != currentGameState){
@@ -644,6 +636,11 @@ return {
     if(root){
       ROOT = root;
     }
+    player.image.src = ROOT+"images/kitty_cat.png";
+    enemy.src = ROOT+"images/candy_sm.png";
+    player.lives.image.src = ROOT+"images/life.png";
+    kibble_O.src = ROOT+"images/kibble_O.png";
+    kibble_X.src = ROOT+"images/kibble_X.png";
     setup();
     myTimer = setInterval(function(){
       loop();
