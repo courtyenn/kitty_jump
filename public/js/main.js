@@ -1,10 +1,10 @@
 // var ROOT = '/wp-content/themes/clean-slate/js/kitty_jump/public/'; // need to get rid of hard code
 var ROOT = './';
-var bgSound = new Audio(ROOT+'sound/meowmix.mp3');
-var gameSound = new Audio(ROOT+'sound/monkeyspinning.mp3');
-var soundFx = new Audio(ROOT+'sound/catmeow.mp3');
-var gameDead = new Audio(ROOT+'sound/catscream.mp3');
 var jumpKey = {};
+var bgSound;
+var gameSound;
+var soundFx;
+var gameDead;
 
 var kitty_jump = (function(){
   var CANVAS_WIDTH = 650;
@@ -595,42 +595,6 @@ function init(){
   currentGameState = 200;
 }
 
-$('.start-game').on('click', function(event){
-  if(currentGameState == 300){
-    $('#game-over').addClass('invisible');
-  }
-  event.preventDefault();
-  currentGameState = 200;
-  $('#start').addClass('invisible');
-  $('#instructions').addClass('invisible');
-  $('#game').removeClass('invisible');
-  bgSound.muted = true;
-  init();
-});
-$('.main-menu').on('click', function(event){
-  event.preventDefault();
-  currentGameState = 100;
-  $('#start').removeClass('invisible');
-  $('#game-over').addClass('invisible');
-  $('#instructions').addClass('invisible');
-  $('#game').addClass('invisible');
-});
-$('#mute').on('click', function(event){
-  event.preventDefault();
-  currentGameState = 450;
-});
-$('.go-to-main-menu').on('click', function(event){
-  event.preventDefault();
-  currentGameState = 100;
-});
-$('.go-to-instructions').on('click', function(event){
-  event.preventDefault();
-  currentGameState = 175;
-  $('#start').addClass('invisible');
-  $('#instructions').removeClass('invisible');
-  $('#game').addClass('invisible');
-});
-
 return {
   playGame : function playGame(root){
     if(root){
@@ -641,6 +605,45 @@ return {
     player.lives.image.src = ROOT+"images/life.png";
     kibble_O.src = ROOT+"images/kibble_O.png";
     kibble_X.src = ROOT+"images/kibble_X.png";
+    bgSound = new Audio(ROOT+'sound/meowmix.mp3');
+    gameSound = new Audio(ROOT+'sound/monkeyspinning.mp3');
+    soundFx = new Audio(ROOT+'sound/catmeow.mp3');
+    gameDead = new Audio(ROOT+'sound/catscream.mp3');
+    $('.start-game').on('click', function(event){
+      if(currentGameState == 300){
+        $('#game-over').addClass('invisible');
+      }
+      event.preventDefault();
+      currentGameState = 200;
+      $('#start').addClass('invisible');
+      $('#instructions').addClass('invisible');
+      $('#game').removeClass('invisible');
+      bgSound.muted = true;
+      init();
+    });
+    $('.main-menu').on('click', function(event){
+      event.preventDefault();
+      currentGameState = 100;
+      $('#start').removeClass('invisible');
+      $('#game-over').addClass('invisible');
+      $('#instructions').addClass('invisible');
+      $('#game').addClass('invisible');
+    });
+    $('#mute').on('click', function(event){
+      event.preventDefault();
+      currentGameState = 450;
+    });
+    $('.go-to-main-menu').on('click', function(event){
+      event.preventDefault();
+      currentGameState = 100;
+    });
+    $('.go-to-instructions').on('click', function(event){
+      event.preventDefault();
+      currentGameState = 175;
+      $('#start').addClass('invisible');
+      $('#instructions').removeClass('invisible');
+      $('#game').addClass('invisible');
+    });
     setup();
     myTimer = setInterval(function(){
       loop();
