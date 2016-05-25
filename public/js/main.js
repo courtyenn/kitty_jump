@@ -586,7 +586,7 @@ function draw(){
   }
 
   context.fillText("SCORE: " + score, CANVAS_WIDTH-100, CANVAS_HEIGHT-20);
-  powerBar.draw(context);
+  // powerBar.draw(context);
 
 }
 function loop(){
