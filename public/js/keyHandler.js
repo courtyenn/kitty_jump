@@ -28,7 +28,6 @@ var KeyHandler = new function(){
           this.keyMap[key].wasPressed = false;
           this.keyMap[key].pressed = true;
         }
-
       }
     }
   };
