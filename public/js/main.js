@@ -32,6 +32,7 @@ var kitty_jump = (function(){
   var time = 0;
   var player = {
     startY: CANVAS_HEIGHT-100,
+    startX: 30,
     x: 30,
     y: CANVAS_HEIGHT-100,
     yStep: 1,
@@ -49,6 +50,7 @@ var kitty_jump = (function(){
     isJumping: false,
     isFalling: false,
     canJump: true,
+    moveDistance: 0,
     draw: function(){
       if(this.isJumping){
         this.jump();
@@ -56,6 +58,7 @@ var kitty_jump = (function(){
       else if(this.isFalling) {
         this.fall();
       }
+      this.move();
       context.drawImage(player.image, this.x, this.y);
     },
     shoot: function() {
@@ -114,12 +117,17 @@ var kitty_jump = (function(){
         }
       }
     },
-    move: function(key){
+    move: function(){
+      if(currentGameState !== 300){
+        this.x += this.moveDistance;
+      }
+    },
+    setMove: function(key){
       if(key === 'a'){
-        this.x -= 15;
+        this.moveDistance = -15;
       }
       else if(key === 'd'){
-        this.x += 15;
+        this.moveDistance = 15;
       }
     }
   };
@@ -377,7 +385,6 @@ var kitty_jump = (function(){
 
     I.explode = function() {
       this.active = false;
-      // Extra Credit: Add an explosion graphic
     };
 
     return I;
@@ -553,18 +560,27 @@ var kitty_jump = (function(){
   KeyHandler.keyMap = keyCodes;
   var jumpConfig = {
     key: 'w',
-    action: player.jumpOn.bind(player),
+    action: function(){
+      player.isJumping = true;
+    },
     conditionBeforeFiringNextAction: checkIfPlayerShouldJump
   };
   var moveConfig = {
     key: 'a',
-    action: player.move.bind(player, 'a'),
-    allowMultipleFire: true
+    action: function(){
+      player.moveDistance = -15;
+    },
+    allowMultipleFire: true,
+    releaseAction: function(){
+      player.moveDistance = 0;
+    }
   };
   KeyHandler.setKeyDownAction(jumpConfig);
   KeyHandler.setKeyDownAction(moveConfig);
   moveConfig.key = 'd';
-  moveConfig.action = player.move.bind(player, 'd');
+  moveConfig.action = function(){
+    player.moveDistance = 15;
+  };
   KeyHandler.setKeyDownAction(moveConfig);
 
 }
@@ -607,6 +623,7 @@ function loop(){
 function init(){
   player.lives.count = 9;
   player.y = player.startY;
+  player.x = player.startX;
   player.canJump = true;
   player.isJumping = false;
   player.isFalling = false;

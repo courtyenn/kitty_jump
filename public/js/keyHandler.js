@@ -6,12 +6,14 @@ var KeyHandler = new function(){
     var action = config.action;
     var condition = config.conditionBeforeFiringNextAction;
     var allowMultipleFire = config.allowMultipleFire || false;
+    var releaseAction = config.releaseAction || null;
     if(this.keyMap[key] !== null){
       this.keyMap[key] = {
         keyDownAction: action,
         pressed: false,
         wasPressed: false,
-        allowMultipleFire: allowMultipleFire
+        allowMultipleFire: allowMultipleFire,
+        releaseAction: releaseAction
       };
       if(condition){
         this.keyMap[key].condition = condition;
@@ -25,16 +27,14 @@ var KeyHandler = new function(){
       if(!this.keyMap[key].pressed && this.keyMap[key].allowMultipleFire === false){
         if(this.keyMap[key].condition && this.keyMap[key].condition()){
           this.keyMap[key].keyDownAction();
-          this.keyMap[key].wasPressed = false;
-          this.keyMap[key].pressed = true;
         }
       }
       else if(this.keyMap[key].allowMultipleFire === true){
         this.keyMap[key].keyDownAction();
-        this.keyMap[key].wasPressed = false;
-        this.keyMap[key].pressed = false;
       }
     }
+    this.keyMap[key].wasPressed = false;
+    this.keyMap[key].pressed = true;
   };
 
   this.handleKeyRelease = function(key){
@@ -42,6 +42,9 @@ var KeyHandler = new function(){
     if(this.keyMap[key] && this.keyMap[key].pressed){
       this.keyMap[key].wasPressed = true;
       this.keyMap[key].pressed = false;
+      if(this.keyMap[key].releaseAction){
+        this.keyMap[key].releaseAction();
+      }
     }
   }
 
