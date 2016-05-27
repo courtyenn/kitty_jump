@@ -100,21 +100,28 @@ var kitty_jump = (function(){
     },
     fall: function(){
       if(currentGameState !== 300){
-      this.velocityY = gravity * this.time;
-      this.y += (this.velocityY);
-      if(this.y >= (this.startY) ){
-        this.isFalling = false;
-        this.isJumping = false;
-        this.canJump = true;
-        this.time = 0;
-        this.y = this.startY;
+        this.velocityY = gravity * this.time;
+        this.y += (this.velocityY);
+        if(this.y >= (this.startY) ){
+          this.isFalling = false;
+          this.isJumping = false;
+          this.canJump = true;
+          this.time = 0;
+          this.y = this.startY;
+        }
+        else {
+          this.time = this.time + .22;
+        }
       }
-      else {
-
-        this.time = this.time + .22;
+    },
+    move: function(key){
+      if(key === 'a'){
+        this.x -= 15;
+      }
+      else if(key === 'd'){
+        this.x += 15;
       }
     }
-  }
   };
 
   gamestates = {
@@ -544,7 +551,21 @@ var kitty_jump = (function(){
   gameDead.volume = .1;
 
   KeyHandler.keyMap = keyCodes;
-  KeyHandler.setKeyDownAction('w', player.jumpOn.bind(player), checkIfPlayerShouldJump);
+  var jumpConfig = {
+    key: 'w',
+    action: player.jumpOn.bind(player),
+    conditionBeforeFiringNextAction: checkIfPlayerShouldJump
+  };
+  var moveConfig = {
+    key: 'a',
+    action: player.move.bind(player, 'a'),
+    allowMultipleFire: true
+  };
+  KeyHandler.setKeyDownAction(jumpConfig);
+  KeyHandler.setKeyDownAction(moveConfig);
+  moveConfig.key = 'd';
+  moveConfig.action = player.move.bind(player, 'd');
+  KeyHandler.setKeyDownAction(moveConfig);
 
 }
 function checkIfPlayerShouldJump(){
